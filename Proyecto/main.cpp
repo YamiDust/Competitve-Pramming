@@ -9,6 +9,8 @@ struct pieza {
   bool Color;
 };
 
+pieza **tablero= new pieza* [8];
+
 void inicio(){
     for(int i=0;i<8;i++){
         for(int j=0;j<8;j++){
@@ -58,7 +60,7 @@ void inicio(){
 
 }
 
-void imprime tablero(){
+void imprime_tablero(){
     for(int i=0;i<8;i++){
         for(int j=0;j<8;j++){
             if(tablero[i][j].Pieza == PEON_N){
@@ -217,11 +219,13 @@ int mover(){
 }
 
 int main(){
-    pieza **tablero= new pieza* [8];
+    //pieza **tablero= new pieza* [8];
 
     for (int i=0;i<8;i++) {
         tablero[i]=new pieza[8];
     }
+    inicio();
+    imprime_tablero();
 
     return 0;
 }
