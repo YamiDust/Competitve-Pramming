@@ -9,6 +9,85 @@ struct pieza {
   bool Color;
 };
 
+void inicio(){
+    for(int i=0;i<8;i++){
+        for(int j=0;j<8;j++){
+            tablero[i][j].Pieza=VACIO;
+            tablero[i][j].Color=1;
+        }
+    }
+    for(int i=0;i<8;i++){
+        tablero[6][i].Pieza = PEON_N;
+        tablero[6][i].Color = 0;
+        tablero[1][i].Pieza = PEON_N;
+        tablero[1][i].Color = 1;
+    }
+
+    tablero[0][0].Pieza = TORRE;
+    tablero[0][0].Color = 1;
+    tablero[0][1].Pieza = CABALLO;
+    tablero[0][1].Color = 1;
+    tablero[0][2].Pieza = ALFIL;
+    tablero[0][2].Color = 1;
+    tablero[0][3].Pieza = REINA;
+    tablero[0][3].Color = 1;
+    tablero[0][4].Pieza = REY;
+    tablero[0][4].Color = 1;
+    tablero[0][5].Pieza = ALFIL;
+    tablero[0][5].Color = 1;
+    tablero[0][6].Pieza = CABALLO;
+    tablero[0][6].Color = 1;
+    tablero[0][7].Pieza = TORRE;
+    tablero[0][7].Color = 1;
+    tablero[7][0].Pieza = TORRE;
+    tablero[7][0].Color = 0;
+    tablero[7][1].Pieza = CABALLO;
+    tablero[7][1].Color = 0;
+    tablero[7][2].Pieza = ALFIL;
+    tablero[7][2].Color = 0;
+    tablero[7][3].Pieza = REINA;
+    tablero[7][3].Color = 0;
+    tablero[7][4].Pieza = REY;
+    tablero[7][4].Color = 0;
+    tablero[7][5].Pieza = ALFIL;
+    tablero[7][5].Color = 0;
+    tablero[7][6].Pieza = CABALLO;
+    tablero[7][6].Color = 0;
+    tablero[7][7].Pieza = TORRE;
+    tablero[7][7].Color = 0;
+
+}
+
+void imprime tablero(){
+    for(int i=0;i<8;i++){
+        for(int j=0;j<8;j++){
+            if(tablero[i][j].Pieza == PEON_N){
+                cout << 1;
+            }
+            if(tablero[i][j].Pieza == TORRE){
+                cout << 2;
+            }
+            if(tablero[i][j].Pieza == CABALLO){
+                cout << 3;
+            }
+            if(tablero[i][j].Pieza == ALFIL){
+                cout << 4;
+            }
+            if(tablero[i][j].Pieza == REINA){
+                cout << 5;
+            }
+            if(tablero[i][j].Pieza == REY){
+                cout << 6;
+            }
+            if(tablero[i][j].Pieza == VACIO){
+                cout << 0;
+            }
+            cout << tablero[i][j].Color << " ";
+        }
+        cout << "\n";
+  }
+}
+
 bool checaMate(pieza **tablero,bool col){
     int x,y;
     for (int i=0;i<8;i++) {
@@ -37,7 +116,7 @@ bool checaMate(pieza **tablero,bool col){
             break;
     }
 
-    for (int i=x-1;i>=0;i--) {
+    for (int i=y-1;i>=0;i--) {
         if ((tablero[x][i].Pieza==REINA || tablero[x][i].Pieza==TORRE) && tablero[x][i].Color!=col){
             return true;
         }
@@ -45,7 +124,7 @@ bool checaMate(pieza **tablero,bool col){
             break;
     }
 
-    for (int i=x+1;i<8;i++) {
+    for (int i=y+1;i<8;i++) {
         if ((tablero[x][i].Pieza==REINA || tablero[x][i].Pieza==TORRE) && tablero[x][i].Color!=col){
             return true;
         }
