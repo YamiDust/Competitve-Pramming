@@ -90,16 +90,7 @@ void imprime_tablero(){
   }
 }
 
-bool checaMate(pieza **tablero,bool col){
-    int x,y;
-    for (int i=0;i<8;i++) {
-        for (int j=0;j<8;j++) {
-            if (tablero[i][j].Pieza==REY && tablero[i][j].Color==col) {
-                x=i;
-                y=j;
-            }
-        }
-    }
+bool checaMate(pieza **tablero,bool col, int x, int y){
 
     ///Horizontal
     for (int i=x+1;i<8;i++) {
@@ -214,8 +205,30 @@ bool checaMate(pieza **tablero,bool col){
     return false;
 }
 
-int mover(){
+int valor(bool nelson, pieza a){
+    if(!nelson)return 0;
+    if(a.Pieza == PEON_N || a.Pieza == PEON_U) return 1;
+    if(a.Pieza == CABALLO || a.Pieza == ALFIL) return 3;
+    if(a.Pieza == REINA) return 10;
+    if(a.Pieza == TORRE) return 5;
+    if(a.Pieza == REY) return 100000;
+}
 
+int peso(pieza **tablero){
+    int pos=0,  neg=0,  pnt;
+    for(int i=0;i<8;i++){
+        for(int j=0;j<8;j++){
+            if(tablero[i][j].Pieza != VACIO){
+                if(tablero[i][j].Color){
+                    pnt+= valor(!checaMate(tablero,tablero[i][j].Color,i,j), tablero[i][j]);
+                }
+                else {
+                    pnt+= valor(checaMate(tablero,tablero[i][j].Color,i,j), tablero[i][j]);
+                }
+            }
+        }
+    }
+    return pnt;
 }
 
 int main(){
