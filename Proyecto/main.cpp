@@ -12,6 +12,7 @@ struct pieza {
 };
 int GLOBAL_COLOR,PLAYER1,PLAYER2;
 pieza **tablero= new pieza* [8];
+int **color_tablero = new int *[8];
 
 void inicio(){
     for(int i=0;i<8;i++){
@@ -228,6 +229,7 @@ int valor(bool nelson, pieza a){
 }
 
 int peso(pieza **tablero){
+
     int pos=0,  neg=0,  pnt;
     for(int i=0;i<8;i++){
         for(int j=0;j<8;j++){
@@ -243,146 +245,163 @@ int peso(pieza **tablero){
     }
     return pnt;
 }
-    void Draw_Board(){
-        int cont=0;
-        rectangle(30,30,670,670);
-        for(int i=30;i<670;i+=80){
-            for(int j=30;j<670;j+=80){
-                cont++;
-                if(cont%2==0){
-                    int *ax = new int[8];
-                    ax[0]=j;
-                    ax[1]=i;
-                    ax[2]=j+80;
-                    ax[3]=i;
-                    ax[4]=j+80;
-                    ax[5]=i+80;
-                    ax[6]=j;
-                    ax[7]=i+80;
-                    fillpoly(4,ax);
-                }
-            }
-            cont++;
-        }
-        return;
-    }
-    void Draw_Pawn(int y, int x,int clr){
-        setfillstyle(SOLID_FILL,clr);
-        fillellipse(x+40,y+20,7,7);
-        fillellipse(x+40,y+29,7,2);
-        arc(x+72,y+30,180,240,30);
-        arc(x+8,y+30,300,0,30);
-        rectangle(x+20,y+55,x+60,y+63);
-        floodfill(x+40,y+50,GLOBAL_COLOR);
-        floodfill(x+40,y+58,GLOBAL_COLOR);
-    }
-    void Draw_Bishop(int y, int x, int clr){
-        setfillstyle(SOLID_FILL,clr);
-        fillellipse(x+40,y+30,17,15);
-        fillellipse(x+40,y+13,4,4);
-        arc(x+70,y+25,210,270,30);
-        arc(x+70,y+33,200,270,30);
-        arc(x+10,y+25,270,330,30);
-        arc(x+10,y+33,270,340,30);
-        line(x+9,y+55,x+9,y+63);
-        line(x+69,y+55,x+69,y+63);
-        floodfill(x+11,y+56,GLOBAL_COLOR);
-        floodfill(x+68,y+56,GLOBAL_COLOR);
-        rectangle(x+37,y+22,x+43,y+38);
-        setfillstyle(SOLID_FILL,ColorActual(x,y));
-        floodfill(x+40,y+30,GLOBAL_COLOR);
-        rectangle(x+32,y+27,x+48,y+33);
-        floodfill(x+33,y+28,GLOBAL_COLOR);
-        floodfill(x+47,y+32,GLOBAL_COLOR);
+void Draw_Board(int **color_tablero){
 
-    }
-    void Draw_Rock(int y, int x,int clr){
-        setfillstyle(SOLID_FILL,clr);
-        y-=5;
-        int ax[30]={20,20, 30,20, 30,30, 35,30, 35,20, 45,20, 45,30, 50,30, 50,20, 60,20, 60,35, 50,45, 30,45, 20,35, 20,20};
-        for(int i=0;i<30;i+=2){
-            ax[i]+=x;
-            ax[i+1]+=y;
-        }
-        drawpoly(15,ax);
-        floodfill(x+40,y+40,GLOBAL_COLOR);
-        rectangle(x+30,y+45,x+50,y+60);
-        floodfill(x+40,y+58,GLOBAL_COLOR);
-        line(x+20,y+65,x+30,y+60);
-        line(x+60,y+65,x+50,y+60);
-        rectangle(x+20,y+65,x+60,y+70);
-        floodfill(x+40,y+63,GLOBAL_COLOR);
-        floodfill(x+40,y+68,GLOBAL_COLOR);
-    }
-    void Draw_Knight(int y, int x,int clr){
-        y+=2;
-        setfillstyle(SOLID_FILL,clr);
-        line(x+20,y+25,x+45,y+10);
-        line(x+45,y+10,x+45,y+5);
-        line(x+45,y+5,x+50,y+10);
-        line(x+50,y+10,x+65,y+15);
-        line(x+65,y+15,x+60,y+45);
-        line(x+60,y+45,x+50,y+55);
-        line(x+35,y+55,x+30,y+45);
-        line(x+30,y+45,x+50,y+30);
-        line(x+50,y+30,x+25,y+35);
-        line(x+25,y+35,x+20,y+25);
-        rectangle(x+30,y+55,x+50,y+60);
-        rectangle(x+20,y+60,x+60,y+70);
-        //arc(x+60,y+55,88,183,10);
-        floodfill(x+45,y+50,GLOBAL_COLOR);
-        floodfill(x+45,y+57,GLOBAL_COLOR);
-        floodfill(x+45,y+65,GLOBAL_COLOR);
-        setfillstyle(SOLID_FILL,ColorActual(x,y));
-        fillellipse(x+48,y+17,4,4);
-        fillellipse(x+25,y+28,2,2);
-    }
-    void Draw_Quen(int y, int x,int clr){
-        setfillstyle(SOLID_FILL,clr);
-        int ax[28]={15,20, 28,35, 30,20, 35,37, 40,20, 45,37, 50,20, 52,35, 65,20, 55,48, 55,65, 25,65, 25,48, 15,20};
-        for(int i=0;i<28;i+=2){
-            ax[i]+=x;
-            ax[i+1]+=y;
-        }
-        drawpoly(14,ax);
-        floodfill(x+40,y+45,GLOBAL_COLOR);
-        rectangle(x+25,y+50,x+55,y+60);
-        fillellipse(x+15,y+20,4,5);
-        fillellipse(x+30,y+20,4,5);
-        fillellipse(x+40,y+20,4,5);
-        fillellipse(x+50,y+20,4,5);
-        fillellipse(x+65,y+20,4,5);
-    }
-    void Draw_King(int y, int x,int clr){
-        y+=8;
-        setfillstyle(SOLID_FILL,clr);
-        int ax[24]={40,50, 42,40, 45,30, 51,22, 60,20, 67,22, 70,30, 68,35, 64,40, 60,45, 58,50, 40,50};
-        int ay[24];
-        for(int i=0;i<24;i+=2){
-            ay[i]=x+80-ax[i];
-            ay[i+1]=y+ax[i+1];
-            ax[i]+=x;
-            ax[i+1]+=y;
-        }
-        drawpoly(12,ax);
-        drawpoly(12,ay);
-        floodfill(x+55,y+35,GLOBAL_COLOR);
-        floodfill(x+25,y+35,GLOBAL_COLOR);
-        rectangle(x+20,y+50,x+60,y+60);
-        int az[14]={45,30, 42,24, 41,21, 40,20, 39,21, 38,24, 35,30};
-        for(int i=0;i<14;i+=2){
-            az[i]+=x;
-            az[i+1]+=y;
-        }
-        drawpoly(7,az);
-        floodfill(x+40,y+31,GLOBAL_COLOR);
-        floodfill(x+40,y+51,GLOBAL_COLOR);
+    int cont=0;
+    int *rec= new int[8];
+    rec[0]=30;
+    rec[1]=30;
+    rec[2]=30;
+    rec[3]=670;
+    rec[6]=670;
+    rec[7]=30;
+    rec[4]=670;
+    rec[5]=670;
 
-        bar(x+38,y+6,x+42,y+24);
-        bar(x+33,y+10,x+47,y+14);
+    setfillstyle(SOLID_FILL,BLACK);
+    fillpoly(4,rec);
+    setfillstyle(SOLID_FILL,WHITE);
+    for(int i=30,I=0;i<670;i+=80,I++){
+        for(int j=30,J=0;j<670;j+=80,J++){
+                int *ax = new int[8];
+                ax[0]=j;
+                ax[1]=i;
+                ax[2]=j+80;
+                ax[3]=i;
+                ax[4]=j+80;
+                ax[5]=i+80;
+                ax[6]=j;
+                ax[7]=i+80;
+                setfillstyle(SOLID_FILL,color_tablero[I][J]);
+                fillpoly(4,ax);
+        }
+        cont++;
     }
-    void Draw_Game(pieza **tablero){
-        Draw_Board();
+    return;
+}
+void Draw_Pawn(int y, int x,int clr){
+
+    setfillstyle(SOLID_FILL,clr);
+    fillellipse(x+40,y+20,7,7);
+    fillellipse(x+40,y+29,7,2);
+    arc(x+72,y+30,180,240,30);
+    arc(x+8,y+30,300,0,30);
+    rectangle(x+20,y+55,x+60,y+63);
+    floodfill(x+40,y+50,GLOBAL_COLOR);
+    floodfill(x+40,y+58,GLOBAL_COLOR);
+}
+void Draw_Bishop(int y, int x, int clr){
+
+    setfillstyle(SOLID_FILL,clr);
+    fillellipse(x+40,y+30,17,15);
+    fillellipse(x+40,y+13,4,4);
+    arc(x+70,y+25,210,270,30);
+    arc(x+70,y+33,200,270,30);
+    arc(x+10,y+25,270,330,30);
+    arc(x+10,y+33,270,340,30);
+    line(x+9,y+55,x+9,y+63);
+    line(x+69,y+55,x+69,y+63);
+    floodfill(x+11,y+56,GLOBAL_COLOR);
+    floodfill(x+68,y+56,GLOBAL_COLOR);
+    rectangle(x+37,y+22,x+43,y+38);
+    setfillstyle(SOLID_FILL,ColorActual(x,y));
+    floodfill(x+40,y+30,GLOBAL_COLOR);
+    rectangle(x+32,y+27,x+48,y+33);
+    floodfill(x+33,y+28,GLOBAL_COLOR);
+    floodfill(x+47,y+32,GLOBAL_COLOR);
+
+}
+void Draw_Rock(int y, int x,int clr){
+
+    setfillstyle(SOLID_FILL,clr);
+    y-=5;
+    int ax[30]={20,20, 30,20, 30,30, 35,30, 35,20, 45,20, 45,30, 50,30, 50,20, 60,20, 60,35, 50,45, 30,45, 20,35, 20,20};
+    for(int i=0;i<30;i+=2){
+        ax[i]+=x;
+        ax[i+1]+=y;
+    }
+    drawpoly(15,ax);
+    floodfill(x+40,y+40,GLOBAL_COLOR);
+    rectangle(x+30,y+45,x+50,y+60);
+    floodfill(x+40,y+58,GLOBAL_COLOR);
+    line(x+20,y+65,x+30,y+60);
+    line(x+60,y+65,x+50,y+60);
+    rectangle(x+20,y+65,x+60,y+70);
+    floodfill(x+40,y+63,GLOBAL_COLOR);
+    floodfill(x+40,y+68,GLOBAL_COLOR);
+}
+void Draw_Knight(int y, int x,int clr){
+
+    y+=2;
+    setfillstyle(SOLID_FILL,clr);
+    line(x+20,y+25,x+45,y+10);
+    line(x+45,y+10,x+45,y+5);
+    line(x+45,y+5,x+50,y+10);
+    line(x+50,y+10,x+65,y+15);
+    line(x+65,y+15,x+60,y+45);
+    line(x+60,y+45,x+50,y+55);
+    line(x+35,y+55,x+30,y+45);
+    line(x+30,y+45,x+50,y+30);
+    line(x+50,y+30,x+25,y+35);
+    line(x+25,y+35,x+20,y+25);
+    rectangle(x+30,y+55,x+50,y+60);
+    rectangle(x+20,y+60,x+60,y+70);
+    //arc(x+60,y+55,88,183,10);
+    floodfill(x+45,y+50,GLOBAL_COLOR);
+    floodfill(x+45,y+57,GLOBAL_COLOR);
+    floodfill(x+45,y+65,GLOBAL_COLOR);
+    setfillstyle(SOLID_FILL,ColorActual(x,y));
+    fillellipse(x+48,y+17,4,4);
+    fillellipse(x+25,y+28,2,2);
+}
+void Draw_Quen(int y, int x,int clr){
+
+    setfillstyle(SOLID_FILL,clr);
+    int ax[28]={15,20, 28,35, 30,20, 35,37, 40,20, 45,37, 50,20, 52,35, 65,20, 55,48, 55,65, 25,65, 25,48, 15,20};
+    for(int i=0;i<28;i+=2){
+        ax[i]+=x;
+        ax[i+1]+=y;
+    }
+    drawpoly(14,ax);
+    floodfill(x+40,y+45,GLOBAL_COLOR);
+    rectangle(x+25,y+50,x+55,y+60);
+    fillellipse(x+15,y+20,4,5);
+    fillellipse(x+30,y+20,4,5);
+    fillellipse(x+40,y+20,4,5);
+    fillellipse(x+50,y+20,4,5);
+    fillellipse(x+65,y+20,4,5);
+}
+void Draw_King(int y, int x,int clr){
+
+    y+=8;
+    setfillstyle(SOLID_FILL,clr);
+    int ax[24]={40,50, 42,40, 45,30, 51,22, 60,20, 67,22, 70,30, 68,35, 64,40, 60,45, 58,50, 40,50};
+    int ay[24];
+    for(int i=0;i<24;i+=2){
+        ay[i]=x+80-ax[i];
+        ay[i+1]=y+ax[i+1];
+        ax[i]+=x;
+        ax[i+1]+=y;
+    }
+    drawpoly(12,ax);
+    drawpoly(12,ay);
+    floodfill(x+55,y+35,GLOBAL_COLOR);
+    floodfill(x+25,y+35,GLOBAL_COLOR);
+    rectangle(x+20,y+50,x+60,y+60);
+    int az[14]={45,30, 42,24, 41,21, 40,20, 39,21, 38,24, 35,30};
+    for(int i=0;i<14;i+=2){
+        az[i]+=x;
+        az[i+1]+=y;
+    }
+    drawpoly(7,az);
+    floodfill(x+40,y+31,GLOBAL_COLOR);
+    floodfill(x+40,y+51,GLOBAL_COLOR);
+
+    bar(x+38,y+6,x+42,y+24);
+    bar(x+33,y+10,x+47,y+14);
+}
+void Draw_Game(pieza **tablero){
+        Draw_Board(color_tablero);
         for(int i=0;i<8;i++){
             for(int j=0;j<8;j++){
                 if(tablero[i][j].Pieza!=VACIO){
@@ -414,11 +433,283 @@ int peso(pieza **tablero){
             }
         }
     }
+
+void Tablero_Color_rst (pieza **tablero, int ** color_tablero) {
+    for (int i=0;i<8;i++) {
+        for (int j=0;j<8;j++) {
+            if (i%2==0) {
+                if (j%2==0) {
+                    color_tablero[i][j]=BLACK;
+                }
+                else {
+                    color_tablero[i][j]=WHITE;
+                }
+            }
+            else {
+                if (j%2==1) {
+                    color_tablero[i][j]=BLACK;
+                }
+                else {
+                    color_tablero[i][j]=WHITE;
+                }
+            }
+        }
+    }
+    return;
+}
+
+void Colorear_Casillas (pieza **tablero, int **color_tablero, int x,int y) {
+    if (tablero[x][y].Pieza==PEON_N) {
+        int i=x,j=y;
+        if (tablero[i][j].Color) {
+            if (tablero[i+1][j].Pieza==VACIO) {
+                color_tablero[i+1][j]=YELLOW;
+                if (tablero[i+2][j].Pieza==VACIO) {
+                    color_tablero[i+2][j]=YELLOW;
+                }
+            }
+            if (j+1<8 && tablero[i+1][j+1].Pieza!=VACIO) {
+                color_tablero[i+1][j+1]=RED;
+            }
+            if (j-1>=0 && tablero[i+1][j-1].Pieza!=VACIO) {
+                color_tablero[i+1][j-1]=RED;
+            }
+        }
+        else {
+            if (tablero[i-1][j].Pieza==VACIO) {
+                color_tablero[i-1][j]=YELLOW;
+                if (tablero[i-2][j].Pieza==VACIO) {
+                    color_tablero[i-2][j]=YELLOW;
+                }
+            }
+            if (j+1<8 && tablero[i-1][j+1].Pieza!=VACIO) {
+                color_tablero[i-1][j+1]=RED;
+            }
+            if (j-1>=0 && tablero[i-1][j-1].Pieza!=VACIO) {
+                color_tablero[i-1][j-1]=RED;
+            }
+        }
+    }
+
+    if (tablero[x][y].Pieza==PEON_U) {
+        int i=x,j=y;
+        if (tablero[i][j].Color) {
+            if (tablero[i+1][j].Pieza==VACIO) {
+                color_tablero[i+1][j]=YELLOW;
+            }
+            if (j+1<8 && tablero[i+1][j+1].Pieza!=VACIO) {
+                color_tablero[i+1][j+1]=RED;
+            }
+            if (j-1>=0 && tablero[i+1][j-1].Pieza!=VACIO) {
+                color_tablero[i+1][j-1]=RED;
+            }
+        }
+        else {
+            if (tablero[i-1][j].Pieza==VACIO) {
+                color_tablero[i-1][j]=YELLOW;
+            }
+            if (j+1<8 && tablero[i-1][j+1].Pieza!=VACIO) {
+                color_tablero[i-1][j+1]=RED;
+            }
+            if (j-1>=0 && tablero[i-1][j-1].Pieza!=VACIO) {
+                color_tablero[i-1][j-1]=RED;
+            }
+        }
+    }
+
+    if (tablero[x][y].Pieza==CABALLO) {
+        if (x+1<8 & y+2<8 && tablero[x+1][y+2].Pieza!=VACIO && tablero[x+1][y+2].Color!=tablero[x][y].Color) {
+            color_tablero[x+1][y+2]=RED;
+        }
+        if (x+2<8 & y+1<8 && tablero[x+2][y+1].Pieza!=VACIO && tablero[x+2][y+1].Color!=tablero[x][y].Color) {
+            color_tablero[x+2][y+1]=RED;
+        }
+        if (x+2<8 & y-1>=0 && tablero[x+2][y-1].Pieza!=VACIO && tablero[x+2][y-1].Color!=tablero[x][y].Color) {
+            color_tablero[x+2][y-1]=RED;
+        }
+        if (x+1<8 & y-2>=0 && tablero[x+1][y-2].Pieza!=VACIO && tablero[x+1][y-2].Color!=tablero[x][y].Color) {
+            color_tablero[x+1][y-2]=RED;
+        }
+        if (x-1>=0 & y-2>=0 && tablero[x-1][y-2].Pieza!=VACIO && tablero[x-1][y-2].Color!=tablero[x][y].Color) {
+            color_tablero[x-1][y-2]=RED;
+        }
+        if (x-2>=0 & y-1>=0 && tablero[x-2][y-1].Pieza!=VACIO && tablero[x-2][y-1].Color!=tablero[x][y].Color) {
+            color_tablero[x-2][y-1]=RED;
+        }
+        if (x-2>=0 & y+1<8 && tablero[x-2][y+1].Pieza!=VACIO && tablero[x-2][y+1].Color!=tablero[x][y].Color) {
+            color_tablero[x-2][y+1]=RED;
+        }
+        if (x-1>=0 & y+2<8 && tablero[x-1][y+2].Pieza!=VACIO && tablero[x-1][y+2].Color!=tablero[x][y].Color) {
+            color_tablero[x-1][y+2]=RED;
+        }
+
+        if (x+1<8 & y+2<8 && tablero[x+1][y+2].Pieza==VACIO) {
+            color_tablero[x+1][y+2]=YELLOW;
+        }
+        if (x+2<8 & y+1<8 && tablero[x+2][y+1].Pieza==VACIO) {
+            color_tablero[x+2][y+1]=YELLOW;
+        }
+        if (x+2<8 & y-1>=0 && tablero[x+2][y-1].Pieza==VACIO) {
+            color_tablero[x+2][y-1]=YELLOW;
+        }
+        if (x+1<8 & y-2>=0 && tablero[x+1][y-2].Pieza==VACIO) {
+            color_tablero[x+1][y-2]=YELLOW;
+        }
+        if (x-1>=0 & y-2>=0 && tablero[x-1][y-2].Pieza==VACIO) {
+            color_tablero[x-1][y-2]=YELLOW;
+        }
+        if (x-2>=0 & y-1>=0 && tablero[x-2][y-1].Pieza==VACIO) {
+            color_tablero[x-2][y-1]=YELLOW;
+        }
+        if (x-2>=0 & y+1<8 && tablero[x-2][y+1].Pieza==VACIO) {
+            color_tablero[x-2][y+1]=YELLOW;
+        }
+        if (x-1>=0 & y+2<8 && tablero[x-1][y+2].Pieza==VACIO) {
+            color_tablero[x-1][y+2]=YELLOW;
+        }
+    }
+
+    if (tablero[x][y].Pieza==REINA || tablero[x][y].Pieza==TORRE) {
+        for (int i=x+1;i<8;i++) {
+            if (tablero[i][y].Pieza==VACIO) {
+                color_tablero[i][y]=YELLOW;
+            }
+            else {
+                if (tablero[i][y].Color!=tablero[x][y].Color) {
+                    color_tablero[i][y]=RED;
+                }
+                break;
+            }
+        }
+        for (int i=x-1;i>=0;i--) {
+            if (tablero[i][y].Pieza==VACIO) {
+                color_tablero[i][y]=YELLOW;
+            }
+            else {
+                if (tablero[i][y].Color!=tablero[x][y].Color) {
+                    color_tablero[i][y]=RED;
+                }
+                break;
+            }
+        }
+
+        for (int j=y+1;j<8;j++) {
+            if (tablero[x][j].Pieza==VACIO) {
+                color_tablero[x][j]=YELLOW;
+            }
+            else {
+                if (tablero[x][j].Color!=tablero[x][y].Color) {
+                    color_tablero[x][j]=RED;
+                }
+                break;
+            }
+        }
+        for (int j=y-1;j>=0;j--) {
+            if (tablero[x][j].Pieza==VACIO) {
+                color_tablero[x][j]=YELLOW;
+            }
+            else {
+                if (tablero[x][j].Color!=tablero[x][y].Color) {
+                    color_tablero[x][j]=RED;
+                }
+                break;
+            }
+        }
+    }
+
+    if (tablero[x][y].Pieza==REINA || tablero[x][y].Pieza==ALFIL) {
+        for (int i=x+1,j=y+1;i<8 && j<8;i++,j++) {
+            if (tablero[i][j].Pieza==VACIO) {
+                color_tablero[i][j]=YELLOW;
+            }
+            else {
+                if (tablero[i][j].Color!=tablero[x][y].Color) {
+                    color_tablero[i][j]=RED;
+                }
+                break;
+            }
+        }
+
+        for (int i=x+1,j=y-1;i<8 && j>=0;i++,j--) {
+            if (tablero[i][j].Pieza==VACIO) {
+                color_tablero[i][j]=YELLOW;
+            }
+            else {
+                if (tablero[i][j].Color!=tablero[x][y].Color) {
+                    color_tablero[i][j]=RED;
+                }
+                break;
+            }
+        }
+
+        for (int i=x-1,j=y+1;i>=0 && j<8;i--,j++) {
+            if (tablero[i][j].Pieza==VACIO) {
+                color_tablero[i][j]=YELLOW;
+            }
+            else {
+                if (tablero[i][j].Color!=tablero[x][y].Color) {
+                    color_tablero[i][j]=RED;
+                }
+                break;
+            }
+        }
+
+        for (int i=x-1,j=y-1;i>=0 && j>=0;i--,j--) {
+            if (tablero[i][j].Pieza==VACIO) {
+                color_tablero[i][j]=YELLOW;
+            }
+            else {
+                if (tablero[i][j].Color!=tablero[x][y].Color) {
+                    color_tablero[i][j]=RED;
+                }
+                break;
+            }
+        }
+    }
+}
+
+bool Movimiento_Valido (int I, int J) {
+    if (color_tablero[I][J]==YELLOW || color_tablero[I][J]==RED){
+        return true;
+    }
+    return false;
+}
+
+void Game (pieza **tablero) {
+    while (1) {
+        int x,y;
+        while (!ismouseclick(WM_LBUTTONDOWN)) {}
+        getmouseclick(WM_LBUTTONDOWN,x,y);
+        int i,j;
+        j=(x-30)/80;
+        i=(y-30)/80;
+        Colorear_Casillas(tablero,color_tablero,i,j);
+        Draw_Game(tablero);
+        if (tablero[i][j].Pieza!=VACIO) {
+            while (!ismouseclick(WM_LBUTTONDOWN)) {}
+            getmouseclick(WM_LBUTTONDOWN,x,y);
+            int _i,_j;
+            _j=(x-30)/80;
+            _i=(y-30)/80;
+            if (Movimiento_Valido(_i,_j)) {
+                tablero[_i][_j]=tablero[i][j];
+                if (tablero[_i][_j].Pieza==PEON_N) {
+                    tablero[_i][_j].Pieza=PEON_U;
+                }
+                tablero[i][j].Pieza=VACIO;
+            }
+            Tablero_Color_rst(tablero,color_tablero);
+            Draw_Game(tablero);
+        }
+    }
+}
+
 int main(){
     //pieza **tablero= new pieza* [8];
 
     for (int i=0;i<8;i++) {
         tablero[i]=new pieza[8];
+        color_tablero[i]=new int[8];
     }
     inicio();
     imprime_tablero();
@@ -427,7 +718,9 @@ int main(){
     setcolor(GLOBAL_COLOR);
     PLAYER1=CYAN;
     PLAYER2=RED;
+    Tablero_Color_rst(tablero,color_tablero);
     Draw_Game(tablero);
+    Game(tablero);
     cin.get();
     return 0;
 }
