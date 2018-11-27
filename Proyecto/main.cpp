@@ -843,6 +843,7 @@ void Game (pieza **tablero) {
                     Accion(tablero,0,0);
                     tablero=t_best;
                 }
+                MvValid=false;
             }
 
         }
