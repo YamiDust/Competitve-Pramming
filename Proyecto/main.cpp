@@ -11,10 +11,16 @@ struct pieza {
 };
 
 int GLOBAL_COLOR,PLAYER1,PLAYER2;
-pieza **tablero= new pieza* [8];
+int best_future,rnd;
+pieza **t_best = new pieza* [8];
+pieza **tablero = new pieza* [8];
 int **color_tablero = new int *[8];
 bool enro_der=true;
 bool enro_izq=true;
+bool awake;
+int desde[5][6][2]={ {{7,1},{7,6},{7,4},{6,3},{7,2},{6,0}},   {{6,4},{7,6},{6,2},{7,5},{3,1},{4,0}},   {{7,6},{6,4},{7,5},{7,4},{6,7},{6,0}},   {{7,6},{7,1},{6,4},{7,5},{7,4},{6,1}},   {{7,6},{7,1},{6,6},{7,6},{7,4},{6,4}}   };
+int hasta[5][6][2]={ {{5,2},{5,5},{4,4},{5,3},{4,5},{5,0}},   {{4,4},{5,5},{5,2},{3,1},{4,0},{6,2}},   {{5,5},{4,4},{5,3},{7,6},{5,7},{5,0}},   {{5,5},{5,2},{4,4},{5,3},{7,6},{4,1}},   {{5,5},{5,2},{6,5},{6,6},{7,6},{4,4}}   };
+
 
 void inicio(){
     for(int i=0;i<8;i++){
@@ -729,7 +735,52 @@ bool Movimiento_Valido (int I, int J) {
     return false;
 }
 
+void Accion(pieza **tablero, bool PlayColor, int deep){
+    if(deep == 6){
+        int t = peso(tablero);
+        if(t>best_future){
+            best_future=t;
+            awake=true;
+        }
+        return ;
+    }
+    for(int i=0 ; i<8 ; i++){
+        for(int j=0 ; j<8 ; j++){
+            if(VACIO != tablero[i][j].Pieza && PlayColor == tablero[i][j].Color){
+                Colorear_Casillas(tablero,color_tablero,i,j);
+                for(int k=0 ; k<8 ; k++){
+                    for(int l=0 ; l<8 ; l++){
+                        if(Movimiento_Valido(k,l)){
+                            pieza axis_in, axis_out;        /*  Auxiliares */
+                            axis_in.Color = tablero[i][j].Color;
+                            axis_in.Pieza = tablero[i][j].Pieza;
+                            axis_out.Color = tablero[k][l].Color;
+                            axis_out.Pieza = tablero[k][l].Pieza;
+                            tablero[k][l].Color = axis_in.Color;
+                            tablero[k][l].Pieza = axis_in.Pieza;
+                            tablero[i][j].Pieza = VACIO;
+                            Tablero_Color_rst(tablero,color_tablero);
+                            Accion(tablero,!PlayColor,deep+1);
+                            tablero[k][l].Color = axis_out.Color;
+                            tablero[k][l].Pieza = axis_out.Pieza;
+                            tablero[i][j].Color = axis_in.Color;
+                            tablero[i][j].Pieza = axis_in.Pieza;
+                            Colorear_Casillas(tablero,color_tablero,i,j);
+                        }
+                    }
+                }
+                if(deep==1 && awake){
+                    t_best=tablero;
+                    awake=false;
+                }
+            }
+        }
+    }
+}
+
 void Game (pieza **tablero) {
+    int playNumber=0;
+    bool MvValid=false;
     while (1) {
         int x,y;
         while (!ismouseclick(WM_LBUTTONDOWN)) {}
@@ -772,9 +823,28 @@ void Game (pieza **tablero) {
                     tablero[_i][_j].Pieza=PEON_U;
                 }
                 tablero[i][j].Pieza=VACIO;
+                MvValid=true;
             }
             Tablero_Color_rst(tablero,color_tablero);
             Draw_Game(tablero);
+            //delay();
+            if(MvValid==true){
+                if(playNumber<6){
+                    if(tablero[desde[rnd][playNumber][0]][desde[rnd][playNumber][1]].Pieza!=VACIO){
+                        tablero[desde[rnd][playNumber][0]][hasta[rnd][playNumber][1]].Pieza = tablero[desde[rnd][playNumber][0]][desde[rnd][playNumber][1]].Pieza;
+                        tablero[desde[rnd][playNumber][0]][hasta[rnd][playNumber][1]].Color = tablero[desde[rnd][playNumber][0]][desde[rnd][playNumber][1]].Color;
+                    }
+                    else {
+
+                        /* falta !! :v*/
+                    }
+                }
+                else {
+                    Accion(tablero,0,0);
+                    tablero=t_best;
+                }
+            }
+
         }
     }
 }
@@ -784,8 +854,11 @@ int main(){
 
     for (int i=0;i<8;i++) {
         tablero[i]=new pieza[8];
+        t_best[i]=new pieza[8];
         color_tablero[i]=new int[8];
     }
+    srand (time(NULL));
+    rnd=rand()%5;
     inicio();
     imprime_tablero();
     initwindow(1000,700);
@@ -794,7 +867,7 @@ int main(){
     PLAYER1=CYAN;
     PLAYER2=RED;
     Tablero_Color_rst(tablero,color_tablero);
-    Draw_Game(tablero);
+Draw_Game(tablero);
     Game(tablero);
     cin.get();
     return 0;
