@@ -13,6 +13,8 @@ struct pieza {
 int GLOBAL_COLOR,PLAYER1,PLAYER2;
 pieza **tablero= new pieza* [8];
 int **color_tablero = new int *[8];
+bool enro_der=true;
+bool enro_izq=true;
 
 void inicio(){
     for(int i=0;i<8;i++){
@@ -704,6 +706,18 @@ void Colorear_Casillas (pieza **tablero, int **color_tablero, int x,int y) {
                 }
             }
         }
+        int k,h;
+        for (k=y+1;k<8 && tablero[x][k].Pieza==VACIO;k++){}
+        for (h=y-1;h>=0 && tablero[x][h].Pieza==VACIO;h--){}
+
+        if (k==7 && enro_der && !checaMate(tablero,tablero[x][y].Color,7,6)) {
+            color_tablero[7][6]=YELLOW;
+        }
+
+        if (h==0 && enro_izq && !checaMate(tablero,tablero[x][y].Color,7,1)) {
+            color_tablero[7][1]=YELLOW;
+        }
+
         tablero[x][y].Pieza=REY;
     }
 }
@@ -732,6 +746,27 @@ void Game (pieza **tablero) {
             _j=(x-30)/80;
             _i=(y-30)/80;
             if (Movimiento_Valido(_i,_j)) {
+
+                if (tablero[i][j].Pieza==REY && _i==7 && _j==6 && enro_der) {
+                    tablero[7][5]=tablero[7][7];
+                    tablero[7][7].Pieza=VACIO;
+                    enro_der=false;
+                }
+                if (tablero[i][j].Pieza==REY && _i==7 && _j==1 && enro_izq) {
+                    tablero[7][2]=tablero[7][0];
+                    tablero[7][0].Pieza=VACIO;
+                    enro_izq=false;
+                }
+                if (tablero[i][j].Pieza==TORRE && i==7 && j==7) {
+                    enro_der=false;
+                }
+                if (tablero[i][j].Pieza==TORRE && i==7 && j==0) {
+                    enro_izq=false;
+                }
+                if (tablero[i][j].Pieza==REY && (abs(i-_i)<=1 || abs(j-_j)<=1)) {
+                    enro_der=enro_izq=false;
+                }
+
                 tablero[_i][_j]=tablero[i][j];
                 if (tablero[_i][_j].Pieza==PEON_N) {
                     tablero[_i][_j].Pieza=PEON_U;
