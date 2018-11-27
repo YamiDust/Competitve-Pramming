@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 #include <graphics.h>
 
-
 using namespace std;
 
 enum Tipo {PEON_N, PEON_U, CABALLO, REINA, REY, TORRE, VACIO,ALFIL};
@@ -10,6 +9,7 @@ struct pieza {
   Tipo Pieza;
   bool Color;
 };
+
 int GLOBAL_COLOR,PLAYER1,PLAYER2;
 pieza **tablero= new pieza* [8];
 int **color_tablero = new int *[8];
@@ -106,6 +106,7 @@ int ColorActual(int x, int y){
 
 bool checaMate(pieza **tablero,bool col, int x, int y){
 
+    cout << col <<  "\n";
     ///Horizontal
     for (int i=x+1;i<8;i++) {
         if ((tablero[i][y].Pieza==REINA || tablero[i][y].Pieza==TORRE) && tablero[i][y].Color!=col){
@@ -138,6 +139,7 @@ bool checaMate(pieza **tablero,bool col, int x, int y){
         if (tablero[x][i].Pieza!=VACIO)
             break;
     }
+
 
     ///Diagonal
     for (int i=x+1,j=y+1;j<8 && i<8;j++,i++) {
@@ -216,6 +218,8 @@ bool checaMate(pieza **tablero,bool col, int x, int y){
         return true;
     }
 
+    cout << "Salio de aqui\n";
+
     return false;
 }
 
@@ -245,6 +249,7 @@ int peso(pieza **tablero){
     }
     return pnt;
 }
+
 void Draw_Board(int **color_tablero){
 
     int cont=0;
@@ -279,6 +284,7 @@ void Draw_Board(int **color_tablero){
     }
     return;
 }
+
 void Draw_Pawn(int y, int x,int clr){
 
     setfillstyle(SOLID_FILL,clr);
@@ -290,6 +296,7 @@ void Draw_Pawn(int y, int x,int clr){
     floodfill(x+40,y+50,GLOBAL_COLOR);
     floodfill(x+40,y+58,GLOBAL_COLOR);
 }
+
 void Draw_Bishop(int y, int x, int clr){
 
     setfillstyle(SOLID_FILL,clr);
@@ -311,6 +318,7 @@ void Draw_Bishop(int y, int x, int clr){
     floodfill(x+47,y+32,GLOBAL_COLOR);
 
 }
+
 void Draw_Rock(int y, int x,int clr){
 
     setfillstyle(SOLID_FILL,clr);
@@ -330,6 +338,7 @@ void Draw_Rock(int y, int x,int clr){
     floodfill(x+40,y+63,GLOBAL_COLOR);
     floodfill(x+40,y+68,GLOBAL_COLOR);
 }
+
 void Draw_Knight(int y, int x,int clr){
 
     y+=2;
@@ -354,6 +363,7 @@ void Draw_Knight(int y, int x,int clr){
     fillellipse(x+48,y+17,4,4);
     fillellipse(x+25,y+28,2,2);
 }
+
 void Draw_Quen(int y, int x,int clr){
 
     setfillstyle(SOLID_FILL,clr);
@@ -371,6 +381,7 @@ void Draw_Quen(int y, int x,int clr){
     fillellipse(x+50,y+20,4,5);
     fillellipse(x+65,y+20,4,5);
 }
+
 void Draw_King(int y, int x,int clr){
 
     y+=8;
@@ -400,6 +411,7 @@ void Draw_King(int y, int x,int clr){
     bar(x+38,y+6,x+42,y+24);
     bar(x+33,y+10,x+47,y+14);
 }
+
 void Draw_Game(pieza **tablero){
         Draw_Board(color_tablero);
         for(int i=0;i<8;i++){
@@ -665,6 +677,34 @@ void Colorear_Casillas (pieza **tablero, int **color_tablero, int x,int y) {
                 break;
             }
         }
+    }
+
+    if (tablero[x][y].Pieza==REY) {
+        //cout << "Se selecciono el REY\n";
+        int mov_i[8]={0,1,1,1,0,-1,-1,-1};
+        int mov_j[8]={1,1,0,-1,-1,-1,0,1};
+        cout << "-----------------------\n";
+        tablero[x][y].Pieza=VACIO;
+        for (int i=0;i<8;i++) {
+            int k,h;
+            //cout << x << " " << y << "->";
+            k=x+mov_i[i];
+            h=y+mov_j[i];
+            if (k<8 && k>=0 && h<8 && h>=0) {
+                if (!checaMate(tablero,tablero[x][y].Color,k,h)) {
+                    cout << k <<  " " << h << "\n";
+                    if (tablero[k][h].Pieza!=VACIO && tablero[k][h].Color!=tablero[x][y].Color){
+                        color_tablero[k][h]=RED;
+                    }
+                    else {
+                        if (tablero[k][h].Pieza==VACIO){
+                            color_tablero[k][h]=YELLOW;
+                        }
+                    }
+                }
+            }
+        }
+        tablero[x][y].Pieza=REY;
     }
 }
 
