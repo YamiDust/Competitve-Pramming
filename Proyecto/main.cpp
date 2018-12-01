@@ -10,6 +10,8 @@ struct pieza {
   bool Color;
 };
 
+int cont_check=0;
+int cont_val=0;
 int GLOBAL_COLOR,PLAYER1,PLAYER2;
 int best_future,rnd;
 pieza **t_best = new pieza* [8];
@@ -20,7 +22,7 @@ bool enro_izq=true;
 bool awake;
 int amd[8][8];
 int desde[5][6][2]={ {{0,6},{0,1},{1,3},{1,4},{0,5},{1,7}},   {{1,3},{0,1},{1,5},{0,2},{4,6},{3,7}},   {{0,1},{1,3},{0,2},{0,3},{1,0},{1,7}},   {{0,1},{0,6},{1,3},{0,2},{0,3},{1,6}},   {{0,1},{0,6},{1,1},{0,1},{0,3},{1,3}}   };
-int hasta[5][6][2]={ {{2,5},{2,2},{3,3},{2,4},{3,2},{2,7}},   {{3,3},{2,2},{2,5},{4,6},{3,7},{1,5}},   {{2,2},{3,3},{2,4},{0,1},{2,0},{2,7}},   {{2,2},{2,5},{3,3},{2,4},{0,1},{3,6}},   {{2,2},{2,5},{1,2},{1,1},{5,1},{3,3}}   };
+int hasta[5][6][2]={ {{2,5},{2,2},{3,3},{2,4},{3,2},{2,7}},   {{3,3},{2,2},{2,5},{4,6},{3,7},{1,5}},   {{2,2},{3,3},{2,4},{0,1},{2,0},{2,7}},   {{2,2},{2,5},{3,3},{2,4},{0,1},{3,6}},   {{2,2},{2,5},{2,1},{1,1},{5,1},{3,3}}   };
 
 void copea(){
     for(int i=0;i<8;i++){
@@ -276,8 +278,6 @@ bool checaMate(pieza **tablero,bool col, int x, int y){
         return true;
     }
 
-    //cout << "Salio de aqui\n";
-
     return false;
 }
 
@@ -290,14 +290,19 @@ int valor(bool nelson, pieza a){
     if(a.Pieza == REY) return 100000;
 }
 
-int peso(pieza **tablero){
+int peso(pieza **tablero,bool col){
 
     int pos=0,  neg=0,  pnt;
     for(int i=0;i<8;i++){
         for(int j=0;j<8;j++){
             if(tablero[i][j].Pieza != VACIO){
-                if(tablero[i][j].Color){
-                    pnt+= valor(!checaMate(tablero,tablero[i][j].Color,i,j), tablero[i][j]);
+                if(tablero[i][j].Color==col){
+                    if (checaMate(tablero,tablero[i][j].Color,i,j)) {
+                        pnt-=valor(true,tablero[i][j]);
+                    }
+                    else{
+                        pnt+=valor(true,tablero[i][j]);
+                    }
                 }
                 else {
                     pnt+= valor(checaMate(tablero,tablero[i][j].Color,i,j), tablero[i][j]);
@@ -310,16 +315,19 @@ int peso(pieza **tablero){
 
 void Draw_Board(int **color_tablero){
 
+    //setcolor(BLACK);
     int cont=0;
     int *rec= new int[8];
     rec[0]=30;
     rec[1]=30;
     rec[2]=30;
-    rec[3]=670;
-    rec[6]=670;
+    rec[3]=880;
+    rec[6]=880;
     rec[7]=30;
-    rec[4]=670;
-    rec[5]=670;
+    rec[4]=880;
+    rec[5]=880;
+
+    //setcolor(WHITE);
 
     setfillstyle(SOLID_FILL,BLACK);
     fillpoly(4,rec);
@@ -538,10 +546,10 @@ void Colorear_Casillas (pieza **tablero, int **color_tablero, int x,int y) {
                     color_tablero[i+2][j]=YELLOW;
                 }
             }
-            if (j+1<8 && tablero[i+1][j+1].Pieza!=VACIO && tablero[i+1][j+1].Color!=tablero[x][y].Color) {
+            if (j+1<8 && i+1<8 && tablero[i+1][j+1].Pieza!=VACIO && tablero[i+1][j+1].Color!=tablero[x][y].Color) {
                 color_tablero[i+1][j+1]=RED;
             }
-            if (j-1>=0 && tablero[i+1][j-1].Pieza!=VACIO  && tablero[i+1][j-1].Color!=tablero[x][y].Color) {
+            if (j-1>=0 && i+1<8 && tablero[i+1][j-1].Pieza!=VACIO  && tablero[i+1][j-1].Color!=tablero[x][y].Color) {
                 color_tablero[i+1][j-1]=RED;
             }
         }
@@ -552,10 +560,10 @@ void Colorear_Casillas (pieza **tablero, int **color_tablero, int x,int y) {
                     color_tablero[i-2][j]=YELLOW;
                 }
             }
-            if (j+1<8 && tablero[i-1][j+1].Pieza!=VACIO  && tablero[i-1][j+1].Color!=tablero[x][y].Color) {
+            if (j+1<8 && i-1>=0 && tablero[i-1][j+1].Pieza!=VACIO  && tablero[i-1][j+1].Color!=tablero[x][y].Color) {
                 color_tablero[i-1][j+1]=RED;
             }
-            if (j-1>=0 && tablero[i-1][j-1].Pieza!=VACIO  && tablero[i-1][j-1].Color!=tablero[x][y].Color) {
+            if (j-1>=0 && i-1>=0 && tablero[i-1][j-1].Pieza!=VACIO  && tablero[i-1][j-1].Color!=tablero[x][y].Color) {
                 color_tablero[i-1][j-1]=RED;
             }
         }
@@ -564,13 +572,13 @@ void Colorear_Casillas (pieza **tablero, int **color_tablero, int x,int y) {
     if (tablero[x][y].Pieza==PEON_U) {
         int i=x,j=y;
         if (tablero[i][j].Color) {
-            if (tablero[i+1][j].Pieza==VACIO) {
+            if (i+1<8 && tablero[i+1][j].Pieza==VACIO) {
                 color_tablero[i+1][j]=YELLOW;
             }
-            if (j+1<8 && tablero[i+1][j+1].Pieza!=VACIO  && tablero[i+1][j+1].Pieza!=tablero[x][y].Pieza) {
+            if (j+1<8  && i+1<8 && tablero[i+1][j+1].Pieza!=VACIO  && tablero[i+1][j+1].Color!=tablero[x][y].Color) {
                 color_tablero[i+1][j+1]=RED;
             }
-            if (j-1>=0 && tablero[i+1][j-1].Pieza!=VACIO  && tablero[i+1][j+1].Pieza!=tablero[x][y].Pieza) {
+            if (j-1>=0 && i+1<8 && tablero[i+1][j-1].Pieza!=VACIO  && tablero[i+1][j-1].Color!=tablero[x][y].Color) {
                 color_tablero[i+1][j-1]=RED;
             }
         }
@@ -578,10 +586,10 @@ void Colorear_Casillas (pieza **tablero, int **color_tablero, int x,int y) {
             if (tablero[i-1][j].Pieza==VACIO) {
                 color_tablero[i-1][j]=YELLOW;
             }
-            if (j+1<8 && tablero[i-1][j+1].Pieza!=VACIO  && tablero[i+1][j+1].Pieza!=tablero[x][y].Pieza) {
+            if (j+1<8  && i-1>=0 && tablero[i-1][j+1].Pieza!=VACIO  && tablero[i-1][j+1].Color!=tablero[x][y].Color) {
                 color_tablero[i-1][j+1]=RED;
             }
-            if (j-1>=0 && tablero[i-1][j-1].Pieza!=VACIO  && tablero[i+1][j+1].Pieza!=tablero[x][y].Pieza) {
+            if (j-1>=0 && i-1>=0 && tablero[i-1][j-1].Pieza!=VACIO  && tablero[i-1][j-1].Color!=tablero[x][y].Color) {
                 color_tablero[i-1][j-1]=RED;
             }
         }
@@ -785,19 +793,30 @@ bool Movimiento_Valido (int I, int J) {
     return false;
 }
 
+bool danger (pieza **tablero,bool col) {
+    cout << "ENTRA";
+    for (int i=0;i<8;i++) {
+        for (int j=0;j<8;j++) {
+            if (tablero[i][j].Pieza==REY && tablero[i][j].Color==col) {
+                cout << i << " " << j << "\n";
+                return checaMate(tablero,col,i,j);
+            }
+        }
+    }
+}
+
 void Accion(pieza **tablero, bool PlayColor, int deep){
     if (deep==1) {
         //imprime_tablero();
     }
 
-    if (deep%2==0) {
-        int tmp=peso(tablero);
-        if (tmp<best_future){}
-     //       return;
+    if (deep==1 && danger(tablero,!PlayColor)) {
+            cont_check++;delay(100);
+            return;
     }
 
     if(deep == 4){
-        int t = peso(tablero);
+        int t = peso(tablero,PlayColor);
         if(t>best_future || (t == best_future && rand()%5==0)){
             best_future=t;
             awake=true;
@@ -811,6 +830,9 @@ void Accion(pieza **tablero, bool PlayColor, int deep){
                 for(int k=0 ; k<8 ; k++){
                     for(int l=0 ; l<8 ; l++){
                         if(Movimiento_Valido(k,l)){
+                            if (deep==0) {
+                                cont_val++;
+                            }
                             pieza axis_in, axis_out;        /*  Auxiliares */
                             axis_in.Color = tablero[i][j].Color;
                             axis_in.Pieza = tablero[i][j].Pieza;
@@ -819,6 +841,9 @@ void Accion(pieza **tablero, bool PlayColor, int deep){
                             tablero[k][l].Color = axis_in.Color;
                             tablero[k][l].Pieza = axis_in.Pieza;
                             tablero[i][j].Pieza = VACIO;
+                            if (tablero[k][l].Pieza==PEON_N) {
+                                tablero[k][l].Pieza=PEON_N;
+                            }
 //                            imprime_tablero();
 //                            cout << k << " " << l << "\n";
                             //system("pause");
@@ -827,9 +852,9 @@ void Accion(pieza **tablero, bool PlayColor, int deep){
                             if(deep==0 && awake){
                                 //t_best=tablero;
                                 copea();
-                                imprime_t();
-                                imprime_tablero();
-                                cout << "ax" << endl;
+                                //imprime_t();
+                                //imprime_tablero();
+                                //cout << "ax" << endl;
                                 awake=false;
                             }
                             Tablero_Color_rst(tablero,color_tablero);
@@ -847,9 +872,44 @@ void Accion(pieza **tablero, bool PlayColor, int deep){
     }
 }
 
+Tipo crown () {
+    outtextxy(680,35,"¿Que pieza escoges?");
+    Draw_Quen(40,680,WHITE);
+    Draw_Bishop(120,680,WHITE);
+    Draw_Knight(200,680,WHITE);
+    Draw_Rock(280,680,WHITE);
+    int _x,_y;
+    Tipo regresa;
+    while ((_x<=760 || _x>=680) && (_y<=360 || _y>=40)) {
+        while (!ismouseclick(WM_LBUTTONDOWN)) {}
+        getmouseclick(WM_LBUTTONDOWN,_x,_y);
+        cout << _x << " " << _y << "\n";
+        clearmouseclick(WM_LBUTTONDOWN);
+        if (((_x<=760 || _x>=680) && (_y<=360 || _y>=40))) {
+            break;
+        }
+    }
+    if (_y<120) {
+        regresa=REINA;
+    }
+    else if (_y<200) {
+        regresa=ALFIL;
+    }
+    else if (_y<280) {
+        regresa=CABALLO;
+    }
+    else {
+        regresa=TORRE;
+    }
+
+    return regresa;
+}
+
 void Game (pieza **tablero) {
     int playNumber=0;
     bool MvValid=false;
+    bool check1;
+    bool check2;
     while (1) {
         int x,y;
         while (!ismouseclick(WM_LBUTTONDOWN)) {}
@@ -857,9 +917,9 @@ void Game (pieza **tablero) {
         int i,j;
         j=(x-30)/80;
         i=(y-30)/80;
-        Colorear_Casillas(tablero,color_tablero,i,j);
-        Draw_Game(tablero);
-        if (tablero[i][j].Pieza!=VACIO) {
+        if (tablero[i][j].Pieza!=VACIO && !tablero[i][j].Color) {
+            Colorear_Casillas(tablero,color_tablero,i,j);
+            Draw_Game(tablero);
             while (!ismouseclick(WM_LBUTTONDOWN)) {}
             getmouseclick(WM_LBUTTONDOWN,x,y);
             int _i,_j;
@@ -891,21 +951,29 @@ void Game (pieza **tablero) {
                 if (tablero[_i][_j].Pieza==PEON_N) {
                     tablero[_i][_j].Pieza=PEON_U;
                 }
+                if (tablero[_i][_j].Pieza==PEON_U && _i==0) {
+                    tablero[_i][_j].Pieza=crown();
+                }
                 tablero[i][j].Pieza=VACIO;
                 MvValid=true;
             }
             Tablero_Color_rst(tablero,color_tablero);
             Draw_Game(tablero);
-            //delay();
+            if (danger(tablero,true)) {
+                outtextxy(680,40,"CHECK!");
+            }
             if(MvValid==true){
                 if(playNumber<6){
-                    //cout << "Entro\n";
+                    delay(500);
                     if(tablero[desde[rnd][playNumber][0]][desde[rnd][playNumber][1]].Pieza!=VACIO){
                         tablero[hasta[rnd][playNumber][0]][hasta[rnd][playNumber][1]].Pieza = tablero[desde[rnd][playNumber][0]][desde[rnd][playNumber][1]].Pieza;
                         tablero[hasta[rnd][playNumber][0]][hasta[rnd][playNumber][1]].Color = tablero[desde[rnd][playNumber][0]][desde[rnd][playNumber][1]].Color;
                         tablero[desde[rnd][playNumber][0]][desde[rnd][playNumber][1]].Pieza=VACIO;
+                        if (tablero[hasta[rnd][playNumber][0]][hasta[rnd][playNumber][1]].Pieza==PEON_N) {
+                            tablero[hasta[rnd][playNumber][0]][hasta[rnd][playNumber][1]].Pieza=PEON_U;
+                        }
                         playNumber++;
-                        cout << 1<<endl;
+                        //cout << 1<<endl;
                     }
                     else {
 
@@ -917,15 +985,15 @@ void Game (pieza **tablero) {
                     Accion(tablero,true,0);
                     copea2();
                     //imprime_t();
-                    imprime_tablero();
-                    cout << 2<< endl;
+                    //imprime_tablero();
+                    //cout << 2<< endl;
                 }
                 MvValid=false;
             }
             Draw_Game(tablero);
-            //system("pause");
-            //delay(1000);
-            //cout << "chingo su madre\n";
+            if (danger(tablero,false)) {
+                outtextxy(680,40,"CHECK!");
+            }
         }
     }
 }
